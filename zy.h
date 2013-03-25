@@ -3,12 +3,19 @@
 #ifndef ZY_H
 #define ZY_H
 
-//int dzy();
-//int czy();
+// error codes
+#define UNKNOWN_ERROR   -1
+#define READ_ERROR      -2
+
+typedef struct
+{
+    unsigned char character;
+    int frequency;
+} charfreq_t;
 
 
-
-
-
+//function prototypes
+int dzy();
+int czy();
 
 #endif
