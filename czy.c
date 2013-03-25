@@ -15,5 +15,15 @@
 
 int czy()
 {
-    
+    /* first we have to create the "most common character" dictionary */
+    int char_freq[256];
+    memset(char_freq, 0, 256*sizeof(int));
+
+
+    return 0;
+}
+
+int main()
+{
+    return 0;
 }
