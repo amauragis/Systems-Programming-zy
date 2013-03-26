@@ -21,5 +21,5 @@ int dzy()
 
 int main()
 {
-    return 0;
+    return dzy();
 }

@@ -15,36 +15,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-// comparator function used by qsort.  will function such that greater
-// frequencies are placed before lesser frequencies.
-int charfreqCompare(const void* a, const void* b)
-{
-    return ((charfreq_t*)b)->frequency - ((charfreq_t*)a)->frequency;
-}
 
-static void printchar(unsigned char theChar) {
-
-    switch (theChar) {
-
-        case '\n':
-            printf("\\n");
-            break;
-        case '\r':
-            printf("\\r");
-            break;
-        case '\t':
-            printf("\\t");
-            break;
-        default:
-            if ((theChar < 0x20) || (theChar > 0x7f)) {
-                printf("\\%03o", (unsigned char)theChar);
-            } else {
-                printf("%c", theChar);
-            }
-        break;
-
-   }
-}
 
 int czy()
 {
@@ -71,13 +42,17 @@ int czy()
     // sort the charFreq array using the charfreqCompare function
     qsort(&charFreq, UCHAR_MAX, sizeof(charfreq_t), charfreqCompare);
 
-    // test print charfreq array 
+    // print dictionary 
     int i;
+    char dict[16];
     for(i = 0; i < 16; i++)
     {
-        //printf("char: %c\tfreq: %i\n",charFreq[i].character, charFreq[i].frequency);
-        printchar(charFreq[i].character);
-        printf("\n");
+        dict[i] = charFreq[i].character;
+        write(STDOUT_FILENO, &dict[i],sizeof(dict[i]));
+                
+        // debug code.  Prints nicely
+        //printchar(charFreq[i].character);
+        //fprintf(stdout,"\n",sizeof(char));
     }
 
     return 0;

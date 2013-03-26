@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "zy.h"
 
 // comparator function used by qsort.  will function such that greater
@@ -8,24 +9,25 @@ int charfreqCompare(const void* a, const void* b)
     return ((charfreq_t*)b)->frequency - ((charfreq_t*)a)->frequency;
 }
 
-static void printchar(unsigned char theChar) {
+static void printchar(unsigned char theChar)
+{
 
     switch (theChar) {
 
         case '\n':
-            printf("\\n");
+            fprintf(stdout,"\\n",sizeof(char));
             break;
         case '\r':
-            printf("\\r");
+            fprintf(stdout,"\\r",sizeof(char));
             break;
         case '\t':
-            printf("\\t");
+            fprintf(stdout,"\\t",sizeof(char));
             break;
         default:
             if ((theChar < 0x20) || (theChar > 0x7f)) {
-                printf("\\%03o", (unsigned char)theChar);
+                fprintf(stdout,"\\%03o", (unsigned char)theChar,sizeof(char));
             } else {
-                printf("%c", theChar);
+                fprintf(stdout,"%c", theChar,sizeof(char));
             }
         break;
 

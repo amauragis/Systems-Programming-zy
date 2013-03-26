@@ -6,6 +6,7 @@
 // error codes
 #define UNKNOWN_ERROR   -1
 #define READ_ERROR      -2
+#define WRITE_ERROR     -3
 
 typedef struct
 {
@@ -17,5 +18,7 @@ typedef struct
 //function prototypes
 int dzy();
 int czy();
+static void printchar(unsigned char theChar);
+int charfreqCompare(const void* a, const void* b);
 
 #endif

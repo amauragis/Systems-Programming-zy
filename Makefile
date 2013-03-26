@@ -7,10 +7,11 @@ all: ${EXEC}
 
 #${EXEC}: ${OBJS}
 #	${CC} ${CCFLAGS} -lm -o ${EXEC} ${OBJS}
+
 czy: czy.o util.o
-	${CC} ${CCFLAGS} -lm -o czy czy.o
+	${CC} ${CCFLAGS} -lm -o czy czy.o util.o
 dzy: dzy.o util.o
-	${CC} ${CCFLAGS} -lm -o dzy dzy.o
+	${CC} ${CCFLAGS} -lm -o dzy dzy.o util.o
     
 clean:
 	rm -f ${EXEC} ${OBJS}
