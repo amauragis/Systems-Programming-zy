@@ -48,11 +48,28 @@ int czy()
     for(i = 0; i < 16; i++)
     {
         dict[i] = charFreq[i].character;
-        write(STDOUT_FILENO, &dict[i],sizeof(dict[i]));
-                
+        if(write(STDOUT_FILENO, &dict[i],sizeof(dict[i])) != 1)
+        {
+            return WRITE_ERROR;
+        }    
         // debug code.  Prints nicely
         //printchar(charFreq[i].character);
         //fprintf(stdout,"\n",sizeof(char));
+    }
+
+    // now we go to the actual run-length coding algorithm
+
+    // seek stdin back to beginning.
+    if(lseek(STDIN_FILENO, 0, SEEK_SET) < 0) return SEEK_ERROR;
+
+    while((readcheck = read(STDIN_FILENO, &currChar,1)) == 1)
+    {
+        
+    }
+    if (readcheck < 0)
+    {
+        // PROBLEM
+        return READ_ERROR;
     }
 
     return 0;
@@ -60,5 +77,40 @@ int czy()
 
 int main()
 {
-    return czy();
+    int retval;
+    retval = czy();
+    if(retval != 0)
+    {
+        switch (retval)
+        {
+            case UNKNOWN_ERROR:
+            {
+                fprintf(stderr,"Unknown error!\n");
+                break;
+            }
+            case READ_ERROR:
+            {
+                fprintf(stderr,"Read error!\n");
+                break;
+            }
+            case WRITE_ERROR:
+            {
+                fprintf(stderr,"Write error!\n");
+                break;
+            }
+            case SEEK_ERROR:
+            {
+                fprintf(stderr,"Seek error!\n");
+                break;
+            }
+            default:
+            {
+                fprintf(stderr,"SEVERELY unknown error!\n");
+                break;
+            }
+
+        }
+        fprintf(stderr,"Usage: ./czy < inputfile > outputfile\n");
+        exit(retval);
+    }
 }

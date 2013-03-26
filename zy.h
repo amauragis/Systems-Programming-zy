@@ -7,6 +7,7 @@
 #define UNKNOWN_ERROR   -1
 #define READ_ERROR      -2
 #define WRITE_ERROR     -3
+#define SEEK_ERROR  -4
 
 typedef struct
 {
