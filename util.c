@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include "zy.h"
 
@@ -37,17 +39,26 @@ void printchar(unsigned char theChar)
    }
 }
 
+
+// writeBits
+//  Writes a number of bits to stdout.
+//  
+//  note: is buffered, must flushBits afterward.
+//
+//  value - binary value to be written. Data is shifted so it's lsb matches the
+//          variable's lsb
+//  size - number of bits to be written <= 32
 int writeBits(unsigned int val, char size)
 {
     // Calculate buffer position and bit position in current byte
     int currByte = (bitIndex / 8);
     char remainingBits = (8 - (bitIndex % 8));
 
-    // Check if buffer is full and needs to be emptied
-    if (((BUF_SIZE*8) - bitIndex) < size )
+    // Check if buffer is full
+    if (((BUF_SIZE*8) - bitIndex) < size)
     {
-        // Write all bytes up to the current one to output
-        if (write(STDOUT_FILENO, &buffer, curByte) != currByte)
+        // Write all bytes up to the current one
+        if (write(STDOUT_FILENO, &buffer, currByte) != currByte)
         {
             return WRITE_ERROR;
         }
@@ -57,7 +68,7 @@ int writeBits(unsigned int val, char size)
             // Update the buffer by moving remaining data down to bottom
             buffer[0] = buffer[currByte];
             
-            // Clear remaining bits in the buffer
+            // Clear remaining buffer
             memset(buffer+1, 0, (BUF_SIZE-1));
         }
         else
@@ -66,26 +77,26 @@ int writeBits(unsigned int val, char size)
             memset(buffer, 0, BUF_SIZE);
         }
 
-        // Readjust the current bit index
+        // move the current bit index
         bitIndex -= currByte*8;
 
-        // Recalc
+        // Recalc current byte and remaining bits
         currByte = (bitIndex / 8);
         remainingBits = (8 - (bitIndex % 8));
     }
 
-    // Set out-of-bounds bits to zero
+    // strip off out of bound bits
     val <<= ((sizeof(int)*8) - size);
     val >>= ((sizeof(int)*8) - size);
 
-    // Add chunks of value to buffer to fill bytes
-    while ( size > remainingBits )
+    // Add val to buffer to fill bytes
+    while(size > remainingBits)
     {
         // Calculate number of bits to write
-        char numBits = (size - remainingBits);
+        unsigned char numBits = (size - remainingBits);
 
         // Write bits to current byte
-       buffer[currByte] |= (val >> numBits);
+        buffer[currByte] |= (val >> numBits);
 
         // Set written bits to zero
         val <<= ((sizeof(int)*8) - numBits);
@@ -102,11 +113,33 @@ int writeBits(unsigned int val, char size)
         remainingBits = (8 - (bitIndex % 8));
     }
 
-    // Finish off remaining bits
+    // Finish remaining bits
     buffer[currByte] |= (unsigned char)(val << (remainingBits - size));
 
     // Increment current bit
     bitIndex += size;
+
+    // Write completed successfully
+    return 0;
+}
+
+// flushBits
+//  Writes the remaining bits in the buffer to stdout
+//  Note: trailing bits in the final byte will be zeros
+int flushBits()
+{
+    // Calculate the most recently written to byte
+    int currByte = ((bitIndex - 1) / 8);
+
+    // Only write if there is data in the buffer
+    if(bitIndex != 0)
+    {
+        // Write all bytes including the current one to output
+        if(write(STDOUT_FILENO, &buffer, currByte+1) != (currByte+1))
+        {
+            return WRITE_ERROR;
+        }
+    }
 
     // Write completed successfully
     return 0;

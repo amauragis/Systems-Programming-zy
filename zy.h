@@ -1,4 +1,4 @@
-/* shared library with error codes and function prototypes */
+// shared library with error codes and function prototypes
 
 #ifndef ZY_H
 #define ZY_H
@@ -28,5 +28,6 @@ int czy();
 void printchar(unsigned char theChar);
 int charfreqCompare(const void* a, const void* b);
 int writeBits(unsigned int value, char size);
+int flushBits();
 
 #endif
