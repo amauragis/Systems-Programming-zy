@@ -64,7 +64,29 @@ int czy()
 
     while((readcheck = read(STDIN_FILENO, &currChar,1)) == 1)
     {
-        
+        int prefix;
+        // character is in dictionary
+        if (charInDict(currChar,dict))
+        {
+            
+        }
+        // character is not in dictionary (ie: nonfrequent character)
+        else
+        {
+            // character is nonfrequent, therefore gets a 1 prepended
+            prefix = 1;
+            prefix <<= 8;
+            int encodedChar = prefix | currChar;
+
+            // we have the bits to write, now we write them
+            int errcode = writeBits(encodedChar,9);
+            if (errcode)
+            {
+                return errcode;
+            }
+
+            // loop continues, read the next byte;
+        }
     }
     if (readcheck < 0)
     {
@@ -72,13 +94,16 @@ int czy()
         return READ_ERROR;
     }
 
-    return 0;
+    return flushBits();
 }
+
 
 int main()
 {
     int retval;
     retval = czy();
+
+    // lets handle some errors!
     if(retval != 0)
     {
         switch (retval)

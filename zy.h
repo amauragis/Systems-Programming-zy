@@ -1,4 +1,4 @@
-// shared library with error codes and function prototypes
+// shared library with error codes, system constants, and function prototypes
 
 #ifndef ZY_H
 #define ZY_H
@@ -10,8 +10,10 @@
 #define SEEK_ERROR  	-4
 
 // system constants
-#define BUF_SIZE	64
+#define BUF_SIZE		64
+#define MAX_RUN_LENGTH	16
 
+// struct for dictionary sorting
 typedef struct
 {
     unsigned char character;
@@ -29,5 +31,6 @@ void printchar(unsigned char theChar);
 int charfreqCompare(const void* a, const void* b);
 int writeBits(unsigned int value, char size);
 int flushBits();
+int charInDict(char currChar, char dict[16]);
 
 #endif

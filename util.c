@@ -39,6 +39,21 @@ void printchar(unsigned char theChar)
    }
 }
 
+// check if currChar is part of dict
+// meant to be used as boolean
+int charInDict(char currChar, char dict[16])
+{
+    int i;
+    for (i = 0; i < 16; i++)
+    {
+        if (currChar == dict[i]){
+            // it is, return immediately with 1
+            return 1;
+        }
+    }
+    // its not, return 0
+    return 0;
+}
 
 // writeBits
 //  Writes a number of bits to stdout.
