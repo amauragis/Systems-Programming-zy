@@ -65,18 +65,42 @@ int czy()
     while((readcheck = read(STDIN_FILENO, &currChar,1)) == 1)
     {
         int prefix;
+        int dictIndex = charInDict(currChar,dict);
+        
         // character is in dictionary
-        if (charInDict(currChar,dict))
+        if (dictIndex <= 0)
         {
-            
+            int runLength = 0;
+            unsigned char checkChar = currChar;
+
+            while(read(STDIN_FILENO, &currChar, 1) == 1 &&
+                  checkChar == currChar &&
+                  runLength < MAX_RUN_LENGTH)
+            {
+                runLength++;
+            }
+
+            // now we create the encoded character, this time with a zero prepended
+            prefix = 0;
+            runLength <<= 4;
+            unsigned int encodedChar = prefix | runLength | dictIndex;
+
+            // we have the bits to write, now we write them
+            int errcode = writeBits(encodedChar,9);
+            if (errcode)
+            {
+                return errcode;
+            }
+
         }
+
         // character is not in dictionary (ie: nonfrequent character)
         else
         {
             // character is nonfrequent, therefore gets a 1 prepended
             prefix = 1;
             prefix <<= 8;
-            int encodedChar = prefix | currChar;
+            unsigned int encodedChar = prefix | currChar;
 
             // we have the bits to write, now we write them
             int errcode = writeBits(encodedChar,9);

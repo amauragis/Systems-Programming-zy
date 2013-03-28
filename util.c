@@ -40,19 +40,18 @@ void printchar(unsigned char theChar)
 }
 
 // check if currChar is part of dict
-// meant to be used as boolean
 int charInDict(char currChar, char dict[16])
 {
     int i;
     for (i = 0; i < 16; i++)
     {
         if (currChar == dict[i]){
-            // it is, return immediately with 1
-            return 1;
+            // it is, return immediately with the index
+            return i;
         }
     }
-    // its not, return 0
-    return 0;
+    // its not, return -1
+    return -1;
 }
 
 // writeBits
