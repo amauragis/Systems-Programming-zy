@@ -62,9 +62,12 @@ int czy()
     // seek stdin back to beginning.
     if(lseek(STDIN_FILENO, 0, SEEK_SET) < 0) return SEEK_ERROR;
 
+    // read from standard in until we can't
     while((readcheck = read(STDIN_FILENO, &currChar,1)) == 1)
     {
         int prefix;
+
+        // index in dictionary, this will be the frequent character code also
         int dictIndex = charInDict(currChar,dict);
         
         // character is in dictionary
@@ -73,6 +76,10 @@ int czy()
             int runLength = 0;
             unsigned char checkChar = currChar;
 
+            // increment run length until we:
+            //  - reach the end of the file
+            //  - reach a different character
+            //  - exceed the maximum run length
             while(read(STDIN_FILENO, &currChar, 1) == 1 &&
                   checkChar == currChar &&
                   runLength < MAX_RUN_LENGTH)
@@ -80,7 +87,7 @@ int czy()
                 runLength++;
             }
 
-            // now we create the encoded character, this time with a zero prepended
+            // now we create the encoded character, frequent with a zero prepended
             prefix = 0;
             runLength <<= 4;
             unsigned int encodedChar = prefix | runLength | dictIndex;
@@ -118,6 +125,7 @@ int czy()
         return READ_ERROR;
     }
 
+    // make sure the buffer is empty and we've zero-padded appropriately, etc
     return flushBits();
 }
 
