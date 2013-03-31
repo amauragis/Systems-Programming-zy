@@ -163,6 +163,7 @@ int flushBits()
 //  Reads bits from stdin
 //
 // data:   pointer to a char array to hold data
+// length: number of bits to read
 int readBits(unsigned char* data, unsigned int length)
 {
 

@@ -84,10 +84,10 @@ int dzy()
             // write it the number of times equal to the run length
             for (i = 0; i <= runLength; i++)
             {
-                if (write(STDOUT_FILENO, &realCHar, 1) != 1) return WRITE_ERROR;
+                if (write(STDOUT_FILENO, &realChar, 1) != 1) return WRITE_ERROR;
             }
         }
-    }
+    } 
 
     // should be done.
     return 0;
