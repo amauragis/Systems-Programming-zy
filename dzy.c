@@ -49,7 +49,6 @@ int dzy()
             if (readval < 0) return readval;
 
             // if we read less than the 8 bits we expected, EOF, we're done
-            // XXX: THIS MAY BE AN ERROR CASE
             if (readval < 8) break;
 
             // now we print the 8 bit symbol, simple!
@@ -59,14 +58,38 @@ int dzy()
         else
         {
             // frequent symbol (ie checkbit == 0)
-            
+            // first 4 bits are run length, next 4 character code
+            unsigned char runLength = 0;
+            readval = readBits(&runLength, 4);
+
+            // if its less than 0, we're returning an error code
+            if (readval < 0) return readval;
+
+            // if we read less than the 4 bits we expected, EOF, we're done
+            if (readval < 4) break;
+
+            // now we get the character code from the dictionary
+            unsigned char dictCode = 0;
+            readval = readBits(&dictCode, 4);
+
+            // if its less than 0, we're returning an error code
+            if (readval < 0) return readval;
+
+            // if we read less than the 4 bits we expected, EOF, we're done
+            if (readval < 4) break;
+
+            // pull the real character from the dictionary
+            unsigned char realChar = dict[dictCode];
+
+            // write it the number of times equal to the run length
+            for (i = 0; i <= runLength; i++)
+            {
+                if (write(STDOUT_FILENO, &realCHar, 1) != 1) return WRITE_ERROR;
+            }
         }
-
     }
-    
 
-
-
+    // should be done.
     return 0;
 }
 
