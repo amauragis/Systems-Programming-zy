@@ -5,6 +5,7 @@
 #include "zy.h"
 
 unsigned char buffer[BUF_SIZE];
+unsigned char readBuffer;
 int bitIndex;
 
 // comparator function used by qsort.  will function such that greater
@@ -166,6 +167,42 @@ int flushBits()
 // length: number of bits to read
 int readBits(unsigned char* data, unsigned int length)
 {
+    unsigned int returnedBits = 0;
 
-    return 0;
+    // bits in buffer
+    unsigned char remainingBits = (8 - bitIndex);
+
+    // get bits from the buffer
+
+    while (length > remainingBits)
+    {
+
+        // move bits from buffer into data
+        *data |= (readBuffer << (length - (unsigned char)remainingBits));
+
+        // put a new byte in the buffer
+        int readval = read(STDIN_FILENO, &buffer, 1);
+        if (readval < 0) return READ_ERROR;
+        if (readval == 0) return returnedBits; // EOF, done.
+
+        // update length and number of bits to return and reset buffer
+        length -= remainingBits;
+        returnedBits += remainingBits;
+        bitIndex = 0;
+        remainingBits = 8;
+    }
+
+    // put rest of bits in data
+    unsigned char bitsLeft = remainingBits - length;
+    *data |= (readBuffer >> bitsLeft);
+
+    // clear bits that we've written
+    readBuffer <<= (8 - bitsLeft);
+    readBuffer >>= (8 - bitsLeft);
+
+    returnedBits += length;
+    bitIndex += length;
+
+
+    return returnedBits;
 }

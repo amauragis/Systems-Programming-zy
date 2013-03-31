@@ -22,6 +22,7 @@ typedef struct
 
 //global variables
 extern unsigned char buffer[BUF_SIZE];
+extern unsigned char readBuffer;
 extern int bitIndex;
 
 //function prototypes

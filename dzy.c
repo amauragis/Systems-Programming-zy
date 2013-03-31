@@ -25,6 +25,8 @@ int dzy()
     for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++);
     if(readval <= 0) return READ_ERROR;
     
+    bitIndex = 0;
+
     // we need to loop until we reach the end of the file, not sure how best
     // to structure this yet
     while (1)
