@@ -59,9 +59,9 @@ int charInDict(char currChar, char dict[16])
 //  
 //  note: is buffered, must flushBits afterward.
 //
-//  value - binary value to be written. Data is shifted so it's lsb matches the
+//  value:  binary value to be written. Data is shifted so it's lsb matches the
 //          variable's lsb
-//  size - number of bits to be written <= 32
+//  size:   number of bits to be written <= 32
 int writeBits(unsigned int val, char size)
 {
     // Calculate buffer position and bit position in current byte
@@ -157,4 +157,13 @@ int flushBits()
 
     // Write completed successfully
     return 0;
+}
+
+// readBits
+//  Reads bits from stdin
+//
+// args
+int readBits(unsigned char* data, unsigned int length)
+{
+
 }

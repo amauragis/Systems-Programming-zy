@@ -44,7 +44,7 @@ int czy()
 
     // print dictionary 
     int i;
-    char dict[16];
+    unsigned char dict[16];
     for(i = 0; i < 16; i++)
     {
         dict[i] = charFreq[i].character;

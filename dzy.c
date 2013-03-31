@@ -16,7 +16,19 @@
 
 int dzy()
 {
-    
+    // first we rebuild the dictionary
+    unsigned char dict[16];
+
+    int readval = 1;
+    int i;
+    // i'm so sorry
+    for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++);
+    if(readval <= 0) return READ_ERROR;
+
+
+
+
+
     return 0;
 }
 
