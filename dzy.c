@@ -21,20 +21,20 @@ unsigned int bitIndex;
 //  Reads bits from stdin
 //
 // data:   pointer to a char array to hold data
-// length: number of bits to read
+// length: number of bits to read (<8)
 int readBits(unsigned char* data, unsigned int length)
 {
-    unsigned int returnedBits = 0;
+    unsigned char returnedBits = 0;
 
     // bits in buffer
     unsigned char remainingBits = (8 - bitIndex);
 
     // get bits from the buffer
 
-    while (length > remainingBits)
+    while (remainingBits < length)
     {
         // move bits from buffer into data
-        *data |= (readBuffer << (length - (unsigned char)remainingBits));
+        *data |= (readBuffer << (length - remainingBits));
 
         // put a new byte in the buffer
         int readval = read(STDIN_FILENO, &readBuffer, 1);
@@ -69,12 +69,12 @@ int dzy()
     // first we rebuild the dictionary
     unsigned char dict[16];
 
-    int readval = 1;
+    int readval;
     int i;
     // i'm so sorry
     for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++)
     {
-       // printf("%i: %c\n",i,dict[i]);
+       fprintf(stderr,"%i: %c\n",i,dict[i]);
     }
    // printf("dictioary built\n");
     if(readval <= 0) return READ_ERROR;
@@ -96,11 +96,13 @@ int dzy()
 
         if (checkBit != 0)
         {   
-           // printf("infrequent symbol\n");
+           
             // this is an infrequenty symbol (ie: checkbit == 1)
             unsigned char symbol = 0;
             // read the next 8 bits
             readval = readBits(&symbol, 8);
+
+            fprintf(stderr,"infrequent symbol: %c\n",symbol);
 
             // if its less than 0, we're returning an error code
             if (readval < 0) return readval;
@@ -114,11 +116,12 @@ int dzy()
         }
         else
         {
-          //  printf("frequent symbol\n");
+          
             // frequent symbol (ie checkbit == 0)
             // first 4 bits are run length, next 4 character code
             unsigned char runLength = 0;
             readval = readBits(&runLength, 4);
+
 
             // if its less than 0, we're returning an error code
             if (readval < 0) return readval;
@@ -138,6 +141,7 @@ int dzy()
 
             // pull the real character from the dictionary
             unsigned char realChar = dict[dictCode];
+            fprintf(stderr,"frequent symbol: %c\n",realChar);
 
             // write it the number of times equal to the run length
             for (i = 0; i <= runLength; i++)
