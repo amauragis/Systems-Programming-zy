@@ -16,7 +16,6 @@
 #include <limits.h>
 
 unsigned char buffer[BUF_SIZE];
-unsigned char readBuffer;
 int bitIndex;
 
 // writeBits
@@ -32,13 +31,14 @@ int writeBits(unsigned int val, unsigned char size)
     // Calculate buffer position and bit position in current byte
     int currByte = (bitIndex / 8);
     char remainingBits = (8 - (bitIndex % 8));
-    fprintf(stderr,"currByte: %i\n", currByte);
-    fprintf(stderr,"remainingBits: %i\n", remainingBits);
+ //   fprintf(stderr,"currByte: %i\n", currByte);
+  //  fprintf(stderr,"remainingBits: %i\n", remainingBits);
+  //  fprintf(stderr,"val: %x\n", val);
 
     // Check if buffer is full
     if (((BUF_SIZE*8) - bitIndex) < size)
     {
-        fprintf(stderr,"buffer full\n");
+    //    fprintf(stderr,"\nbuffer full\n\n");
         // Write all bytes up to the current one
         if (write(STDOUT_FILENO, &buffer, currByte) != currByte)
         {
@@ -70,15 +70,17 @@ int writeBits(unsigned int val, unsigned char size)
     // strip off out of bound bits
     val <<= ((sizeof(int)*8) - size);
     val >>= ((sizeof(int)*8) - size);
+   // fprintf(stderr,"stripped val: %x\n",val);
 
     // Add val to buffer to fill bytes
-    while(size > remainingBits)
+    while(remainingBits < size)
     {
         // Calculate number of bits to write
         unsigned char numBits = (size - remainingBits);
 
         // Write bits to current byte
         buffer[currByte] |= (val >> numBits);
+        //fprintf(stderr,"->buffer: %x\n",*buffer);
 
         // Set written bits to zero
         val <<= ((sizeof(int)*8) - numBits);
@@ -133,6 +135,7 @@ int czy()
     charfreq_t charFreq[UCHAR_MAX];
     memset(charFreq, 0, UCHAR_MAX*sizeof(charfreq_t));
 
+    bitIndex = 0;
     unsigned char currChar;
     int readcheck;
 
@@ -168,7 +171,7 @@ int czy()
         //printchar(charFreq[i].character);
         //fprintf(stdout,"\n",sizeof(char));
     }
-    fprintf(stderr,"dictionary completed\n");
+    //fprintf(stderr,"dictionary completed\n");
     // now we go to the actual run-length coding algorithm
 
     // seek stdin back to beginning.
@@ -185,27 +188,24 @@ int czy()
         // character is in dictionary
         if (dictIndex >= 0)
         {
-            fprintf(stderr, "frequent: %c\n",currChar);
-            unsigned int runLength = 0;
+          fprintf(stderr, "frequent: %c\n",currChar);
+            unsigned char runLength = 0;
             unsigned char checkChar = currChar;
 
             // increment run length until we:
             //  - reach the end of the file
             //  - reach a different character
-            //  - exceed the maximum run length
-    
+            //  - exceed the maximum run length    
             while(1 == read(STDIN_FILENO, &currChar, 1) &&
                   checkChar == currChar &&
                   runLength < MAX_RUN_LENGTH)
             {
-                if (checkChar != currChar)
-                {
-                    lseek(STDIN_FILENO, -1, SEEK_CUR);
-                    break;
-                }
                 runLength++;
             }
-            
+            if (checkChar != currChar)
+            {
+                lseek(STDIN_FILENO, -1, SEEK_CUR);                    
+            }
 
             // now we create the encoded character, frequent with a zero prepended
             prefix = 0;
@@ -214,6 +214,7 @@ int czy()
             encodedChar |= prefix | runLength | dictIndex;
 
             // we have the bits to write, now we write them
+            fprintf(stderr,"encodedChar: %x\n",encodedChar);
             int errcode = writeBits(encodedChar,9);
             if (errcode)
             {
@@ -225,7 +226,7 @@ int czy()
         // character is not in dictionary (ie: nonfrequent character)
         else
         {
-            fprintf(stderr,"nonfrequent: %c\n",currChar);
+           fprintf(stderr,"nonfrequent: %c\n",currChar);
             // character is nonfrequent, therefore gets a 1 prepended
             prefix = 1;
             prefix <<= 8;
@@ -233,6 +234,7 @@ int czy()
             encodedChar |= prefix | currChar;
 
             // we have the bits to write, now we write them
+             fprintf(stderr,"encodedChar: %x\n",encodedChar);
             int errcode = writeBits(encodedChar,9);
             if (errcode)
             {
