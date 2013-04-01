@@ -20,17 +20,13 @@ typedef struct
     int frequency;
 } charfreq_t;
 
-//global variables
-extern unsigned char buffer[BUF_SIZE];
-extern unsigned char readBuffer;
-extern int bitIndex;
 
 //function prototypes
 int dzy();
 int czy();
 void printchar(unsigned char theChar);
 int charfreqCompare(const void* a, const void* b);
-int writeBits(unsigned int value, char size);
+int writeBits(unsigned int value, unsigned char size);
 int flushBits();
 int charInDict(char currChar, char dict[16]);
 int readBits(unsigned char* data, unsigned int length);

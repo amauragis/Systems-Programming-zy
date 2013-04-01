@@ -14,6 +14,57 @@
 #include <string.h>
 #include <stdlib.h>
 
+unsigned char readBuffer;
+unsigned int bitIndex;
+
+// readBits
+//  Reads bits from stdin
+//
+// data:   pointer to a char array to hold data
+// length: number of bits to read
+int readBits(unsigned char* data, unsigned int length)
+{
+    unsigned int returnedBits = 0;
+
+    // bits in buffer
+    unsigned char remainingBits = (8 - bitIndex);
+
+    // get bits from the buffer
+
+    while (length > remainingBits)
+    {
+
+        // move bits from buffer into data
+        *data |= (readBuffer << (length - (unsigned char)remainingBits));
+
+        // put a new byte in the buffer
+        int readval = read(STDIN_FILENO, &readBuffer, 1);
+        if (readval < 0) return READ_ERROR;
+        if (readval == 0) return returnedBits; // EOF, done.
+
+        // update length and number of bits to return and reset buffer
+        length -= remainingBits;
+        returnedBits += remainingBits;
+        bitIndex = 0;
+        remainingBits = 8;
+    }
+
+    // put rest of bits in data
+    unsigned char bitsLeft = remainingBits - length;
+    *data |= (readBuffer >> bitsLeft);
+
+    // clear bits that we've written
+    readBuffer <<= (8 - bitsLeft);
+    readBuffer >>= (8 - bitsLeft);
+
+    returnedBits += length;
+    bitIndex += length;
+
+
+    return returnedBits;
+}
+
+
 int dzy()
 {
     // first we rebuild the dictionary
@@ -22,7 +73,11 @@ int dzy()
     int readval = 1;
     int i;
     // i'm so sorry
-    for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++);
+    for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++)
+    {
+        printf("%i: %c\n",i,dict[i]);
+    }
+    printf("dictioary built\n");
     if(readval <= 0) return READ_ERROR;
     
     bitIndex = 0;
@@ -41,7 +96,8 @@ int dzy()
         if (readval < 0) return readval;
 
         if (checkBit != 0)
-        {
+        {   
+            printf("infrequent symbol\n");
             // this is an infrequenty symbol (ie: checkbit == 1)
             unsigned char symbol = 0;
             // read the next 8 bits
@@ -59,6 +115,7 @@ int dzy()
         }
         else
         {
+            printf("frequent symbol\n");
             // frequent symbol (ie checkbit == 0)
             // first 4 bits are run length, next 4 character code
             unsigned char runLength = 0;
