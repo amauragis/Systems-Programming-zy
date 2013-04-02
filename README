@@ -1,1 +1,41 @@
-README
+Compression statistics for czy and dzy:
+zero file was generated from /dev/zero
+random file was generated from /dev/urandom
+
+Sample file: dzy.c
+============================
+original file size: 	6006
+czy compressed:			5357  (89.2%)
+gzip compressed:		1700  (28.3%)
+
+
+Sample file: zero.1024kB
+============================
+original file size:		1048576
+czy compressed:			65553 (6.25%)
+gzip compressed:		1062  (0.101%)
+
+
+Sample file: zero.10MB
+============================
+original file size:		10485760
+czy compressed:			655377 (6.25%)
+gzip compressed:		10217  (0.0974%)
+
+
+Sample file: random.1024kB
+============================
+original file size:		1048576 
+czy compressed:			1179366 (125%)
+gzip compressed:		1048767 (100%)
+
+
+Sample file: random.10MB
+============================
+original file size:		10485760
+czy compressed:			11793587 (125%)
+gzip compressed:		10487389 (100%)
+
+The random file is expected worst case, the zero is the expected
+best case.  The results show that gzip functions better in all tested
+cases.
