@@ -188,7 +188,7 @@ int czy()
         // character is in dictionary
         if (dictIndex >= 0)
         {
-          fprintf(stderr, "frequent: %c\n",currChar);
+          // fprintf(stderr, "frequent: %c\n",currChar);
             unsigned char runLength = 0;
             unsigned char checkChar = currChar;
 
@@ -214,7 +214,7 @@ int czy()
             encodedChar |= prefix | runLength | dictIndex;
 
             // we have the bits to write, now we write them
-            fprintf(stderr,"encodedChar: %x\n",encodedChar);
+            // fprintf(stderr,"encodedChar: %x\n",encodedChar);
             int errcode = writeBits(encodedChar,9);
             if (errcode)
             {
@@ -226,7 +226,7 @@ int czy()
         // character is not in dictionary (ie: nonfrequent character)
         else
         {
-           fprintf(stderr,"nonfrequent: %c\n",currChar);
+           // fprintf(stderr,"nonfrequent: %c\n",currChar);
             // character is nonfrequent, therefore gets a 1 prepended
             prefix = 1;
             prefix <<= 8;
@@ -234,7 +234,7 @@ int czy()
             encodedChar |= prefix | currChar;
 
             // we have the bits to write, now we write them
-             fprintf(stderr,"encodedChar: %x\n",encodedChar);
+            // fprintf(stderr,"encodedChar: %x\n",encodedChar);
             int errcode = writeBits(encodedChar,9);
             if (errcode)
             {
@@ -254,7 +254,7 @@ int czy()
     return flushBits();
 }
 
-
+// main calls czy and does error handling
 int main()
 {
     int retval;

@@ -24,18 +24,20 @@ unsigned int bitIndex;
 // length: number of bits to read (<8)
 int readBits(unsigned char* data, unsigned char length)
 {
-    fprintf(stderr,"\n\nReadBits Call: %i bits\n----------------\n",length);
+    //fprintf(stderr,"\n\nReadBits Call: %i bits\n----------------\n",length);
+    
+    // bits to return (works like read syscall)
     unsigned char returnedBits = 0;
     // bits in buffer
     unsigned char remainingBits = (8 - bitIndex);
 
     // get bits from the buffer
-
     while (remainingBits < length)
     {
-        fprintf(stderr, "remainingBits: %i\n",remainingBits);
-        fprintf(stderr, "data: %x\n", *data);
-        fprintf(stderr, "readBuffer: %x\n", readBuffer);
+        // fprintf(stderr, "remainingBits: %i\n",remainingBits);
+        // fprintf(stderr, "data: %x\n", *data);
+        // fprintf(stderr, "readBuffer: %x\n", readBuffer);
+
         // move bits from buffer into data
         *data |= (readBuffer << (length - remainingBits));
 
@@ -50,9 +52,9 @@ int readBits(unsigned char* data, unsigned char length)
         bitIndex = 0;
         remainingBits = 8;
     }
-    fprintf(stderr, "remainingBits1: %i\n",remainingBits);
-    fprintf(stderr, "data1: %x\n", *data);
-    fprintf(stderr, "readBuffer1: %x\n", readBuffer);
+    // fprintf(stderr, "remainingBits1: %i\n",remainingBits);
+    // fprintf(stderr, "data1: %x\n", *data);
+    // fprintf(stderr, "readBuffer1: %x\n", readBuffer);
 
     // put rest of bits in data
     unsigned char bitsLeft = remainingBits - length;
@@ -62,16 +64,19 @@ int readBits(unsigned char* data, unsigned char length)
     readBuffer <<= (8 - bitsLeft);
     readBuffer >>= (8 - bitsLeft);
 
+    // update based on length
     returnedBits += length;
     bitIndex += length;
 
-    fprintf(stderr, "remainingBits2: %i\n",remainingBits);
-    fprintf(stderr, "data2: %x\n", *data);
-    fprintf(stderr, "readBuffer2: %x\n", readBuffer);
+    // fprintf(stderr, "remainingBits2: %i\n",remainingBits);
+    // fprintf(stderr, "data2: %x\n", *data);
+    // fprintf(stderr, "readBuffer2: %x\n", readBuffer);
     return returnedBits;
 }
 
-
+// dzy
+//  Handles the decompression protocol
+//  returns error codes
 int dzy()
 {
     
@@ -80,20 +85,23 @@ int dzy()
 
     int readval;
     int i;
-    // i'm so sorry
-    for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++)
-    {
-       fprintf(stderr,"%i: %c\n",i,dict[i]);
-    }
+    // i'm so sorry (rebuild dictionary)
+    for(i = 0; i < 16 && (readval = read(STDIN_FILENO, dict+i,1)) == 1; i++);
 
-   // printf("dictioary built\n");
+    // {
+    //    fprintf(stderr,"%i: %c\n",i,dict[i]);
+    // }
+
+    // printf("dictioary built\n");
     if(readval <= 0) return READ_ERROR;
     
+    // set index to zero, read in first byte
     bitIndex = 0;
     readval = read(STDIN_FILENO, &readBuffer, 1);
+    
     if(readval <= 0) return READ_ERROR;
-    // we need to loop until we reach the end of the file, not sure how best
-    // to structure this yet
+
+    // we need to loop until we reach the end of the file
     while (1)
     {
         // we are at the first encoded char
@@ -107,13 +115,12 @@ int dzy()
 
         if (checkBit != 0)
         {   
-           
             // this is an infrequenty symbol (ie: checkbit == 1)
             unsigned char symbol = 0;
             // read the next 8 bits
             readval = readBits(&symbol, 8);
 
-            fprintf(stderr,"infrequent symbol: %c\n",symbol);
+            // fprintf(stderr,"infrequent symbol: %c\n",symbol);
 
             // if its less than 0, we're returning an error code
             if (readval < 0) return readval;
@@ -127,7 +134,6 @@ int dzy()
         }
         else
         {
-          
             // frequent symbol (ie checkbit == 0)
             // first 4 bits are run length, next 4 character code
             unsigned char runLength = 0;
@@ -151,7 +157,8 @@ int dzy()
 
             // pull the real character from the dictionary
             unsigned char realChar = dict[dictCode];
-            fprintf(stderr,"frequent symbol: %c\n",realChar);
+
+            // fprintf(stderr,"frequent symbol: %c\n",realChar);
 
             // write it the number of times equal to the run length
             for (i = 0; i <= runLength; i++)
@@ -165,6 +172,8 @@ int dzy()
     return 0;
 }
 
+
+// main calls dzy and does error handling
 int main()
 {
     int retval;

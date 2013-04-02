@@ -10,7 +10,7 @@
 #define SEEK_ERROR  	-4
 
 // system constants
-#define BUF_SIZE		8
+#define BUF_SIZE		64
 #define MAX_RUN_LENGTH	16
 
 // struct for dictionary sorting

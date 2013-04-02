@@ -11,6 +11,7 @@ int charfreqCompare(const void* a, const void* b)
     return ((charfreq_t*)b)->frequency - ((charfreq_t*)a)->frequency;
 }
 
+// pretty print version of print character
 void printchar(unsigned char theChar)
 {
 
