@@ -22,10 +22,10 @@ unsigned int bitIndex;
 //
 // data:   pointer to a char array to hold data
 // length: number of bits to read (<8)
-int readBits(unsigned char* data, unsigned int length)
+int readBits(unsigned char* data, unsigned char length)
 {
+    fprintf(stderr,"\n\nReadBits Call: %i bits\n----------------\n",length);
     unsigned char returnedBits = 0;
-
     // bits in buffer
     unsigned char remainingBits = (8 - bitIndex);
 
@@ -33,6 +33,9 @@ int readBits(unsigned char* data, unsigned int length)
 
     while (remainingBits < length)
     {
+        fprintf(stderr, "remainingBits: %i\n",remainingBits);
+        fprintf(stderr, "data: %x\n", *data);
+        fprintf(stderr, "readBuffer: %x\n", readBuffer);
         // move bits from buffer into data
         *data |= (readBuffer << (length - remainingBits));
 
@@ -47,6 +50,9 @@ int readBits(unsigned char* data, unsigned int length)
         bitIndex = 0;
         remainingBits = 8;
     }
+    fprintf(stderr, "remainingBits1: %i\n",remainingBits);
+    fprintf(stderr, "data1: %x\n", *data);
+    fprintf(stderr, "readBuffer1: %x\n", readBuffer);
 
     // put rest of bits in data
     unsigned char bitsLeft = remainingBits - length;
@@ -59,13 +65,16 @@ int readBits(unsigned char* data, unsigned int length)
     returnedBits += length;
     bitIndex += length;
 
-
+    fprintf(stderr, "remainingBits2: %i\n",remainingBits);
+    fprintf(stderr, "data2: %x\n", *data);
+    fprintf(stderr, "readBuffer2: %x\n", readBuffer);
     return returnedBits;
 }
 
 
 int dzy()
 {
+    
     // first we rebuild the dictionary
     unsigned char dict[16];
 
@@ -76,11 +85,13 @@ int dzy()
     {
        fprintf(stderr,"%i: %c\n",i,dict[i]);
     }
+
    // printf("dictioary built\n");
     if(readval <= 0) return READ_ERROR;
     
     bitIndex = 0;
-
+    readval = read(STDIN_FILENO, &readBuffer, 1);
+    if(readval <= 0) return READ_ERROR;
     // we need to loop until we reach the end of the file, not sure how best
     // to structure this yet
     while (1)
@@ -122,14 +133,13 @@ int dzy()
             unsigned char runLength = 0;
             readval = readBits(&runLength, 4);
 
-
             // if its less than 0, we're returning an error code
             if (readval < 0) return readval;
 
             // if we read less than the 4 bits we expected, EOF, we're done
             if (readval < 4) break;
 
-            // now we get the character code from the dictionary
+            // now we get the dictionary code
             unsigned char dictCode = 0;
             readval = readBits(&dictCode, 4);
 

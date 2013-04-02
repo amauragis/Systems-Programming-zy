@@ -29,6 +29,6 @@ int charfreqCompare(const void* a, const void* b);
 int writeBits(unsigned int value, unsigned char size);
 int flushBits();
 int charInDict(char currChar, char dict[16]);
-int readBits(unsigned char* data, unsigned int length);
+int readBits(unsigned char* data, unsigned char length);
 
 #endif
