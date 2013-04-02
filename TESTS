@@ -1,0 +1,19 @@
+czy and dzy were tested against each other (ie, the output czy was piped into
+dzy).  This test was repeated with files causing the following circumstances:
+	- File size smaller than 16 (smaller than dictionary)
+	- File size smaller than 16 with repeated characters
+	- File size smaller than bit writing buffer
+	- File size larger than bit writing buffer
+
+Sample files included arbitrarily generated character files, long code files,
+and some binary files.
+
+Additionally, a file compressed with my czy program was decoded by another
+students dzy program, and vice versa.
+
+Compression ratios were measured using randomly generated files and constant
+character files (ie: /dev/zero) of various sizes.
+
+During the design process, files were generated and inspected by hand.
+
+Currently czy and dzy passed all tests that were run.
