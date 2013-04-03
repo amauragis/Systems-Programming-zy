@@ -30,7 +30,7 @@ int writeBits(unsigned int val, unsigned char size)
 {
     // Calculate buffer position and bit position in current byte
     int currByte = (bitIndex / 8);
-    char remainingBits = (8 - (bitIndex % 8));
+    unsigned char remainingBits = (8 - (bitIndex % 8));
  //   fprintf(stderr,"currByte: %i\n", currByte);
   //  fprintf(stderr,"remainingBits: %i\n", remainingBits);
   //  fprintf(stderr,"val: %x\n", val);
